@@ -101,7 +101,7 @@ footer{max-width:1400px;margin:0 auto;padding:0 16px 26px;color:var(--muted);fon
       </div>
       <div class="feedback-box challenge">
         <h3>💭 Think deeper</h3>
-        <p>What one change would make your plan more suitable for this child? Explain why.</p>
+        <p id="challengePrompt">What one change would make your plan more suitable for this child? Explain why.</p>
         <textarea id="reflection" placeholder="I would change… because…"></textarea>
         <button id="reflectionBtn" style="margin-top:8px">Review my explanation</button>
         <p id="reflectionFeedback" aria-live="polite"></p>
@@ -140,7 +140,20 @@ const dishes = [
 {id:"roti",name:"Roti with vegetables and dal",meal:"Dinner",cuisine:"Indian",desc:"Wheat flatbread, lentils and cooked vegetables",tags:["carb","protein","veg","fiber","dairyfree","gluten"]},
 {id:"fish",name:"Baked fish with brown rice",meal:"Dinner",cuisine:"International",desc:"Fish, brown rice and steamed vegetables",tags:["protein","carb","veg","fiber","dairyfree"]},
 {id:"soup",name:"Vegetable soup with whole-grain toast",meal:"Dinner",cuisine:"International",desc:"Vegetable soup and whole-grain toast",tags:["carb","veg","fiber","dairyfree","gluten"]},
-{id:"tofu",name:"Tofu and vegetable rice bowl",meal:"Dinner",cuisine:"International",desc:"Tofu, rice and mixed vegetables",tags:["protein","carb","veg","fiber","dairyfree"]}
+{id:"tofu",name:"Tofu and vegetable rice bowl",meal:"Dinner",cuisine:"International",desc:"Tofu, rice and mixed vegetables",tags:["protein","carb","veg","fiber","dairyfree"]},
+{id:"energy",name:"Energy drink",meal:"Afternoon snack",cuisine:"International",desc:"Often high in caffeine or sugar; not a suitable routine drink for children",tags:["sugar","caffeine","dairyfree"]},
+{id:"fries",name:"Large fries",meal:"Lunch",cuisine:"International",desc:"Provides energy but is low in variety and often high in salt and fat",tags:["carb","fried","dairyfree"]},
+{id:"cake",name:"Chocolate cake",meal:"Afternoon snack",cuisine:"International",desc:"A treat, but not a strong everyday recovery snack",tags:["sugar","carb","dairy"]},
+{id:"soda",name:"Fizzy soft drink",meal:"Morning snack",cuisine:"International",desc:"Adds sugar but few useful nutrients; water is usually a better everyday choice",tags:["sugar","dairyfree"]},
+{id:"plainrice",name:"Plain white rice only",meal:"Dinner",cuisine:"Indian",desc:"Provides carbohydrates, but this meal alone lacks variety and a clear protein source",tags:["carb","dairyfree"]},
+{id:"chips",name:"Packet crisps",meal:"Morning snack",cuisine:"International",desc:"Convenient, but often high in salt and low in protein and fibre",tags:["fried","dairyfree"]},
+{id:"sweetcereal",name:"Sugary breakfast cereal",meal:"Breakfast",cuisine:"International",desc:"Check the label: some cereals contain lots of added sugar and little fibre",tags:["carb","sugar","dairyfree"]},
+{id:"water",name:"Water",meal:"Morning snack",cuisine:"International",desc:"Supports hydration; especially important before, during and after activity",tags:["hydration","dairyfree"]},
+{id:"eggbanana",name:"Boiled egg and banana",meal:"Afternoon snack",cuisine:"International",desc:"A practical mix of protein and carbohydrate",tags:["protein","fruit","carb","dairyfree"]},
+{id:"milk",name:"Milk and banana",meal:"Afternoon snack",cuisine:"International",desc:"Provides carbohydrate and protein; choose only if dairy is suitable",tags:["protein","fruit","carb","dairy"]},
+{id:"samosa",name:"Fried samosa",meal:"Afternoon snack",cuisine:"Indian",desc:"Can be enjoyed sometimes, but it is not the most balanced everyday recovery snack",tags:["carb","fried","dairyfree"]},
+{id:"sprouts",name:"Moong sprouts chaat",meal:"Morning snack",cuisine:"Indian",desc:"Sprouted moong with tomato, cucumber and lemon",tags:["protein","veg","fiber","dairyfree"]},
+{id:"sportsdrink",name:"Sugary sports drink",meal:"Afternoon snack",cuisine:"International",desc:"Usually unnecessary for ordinary school activity; specific prolonged intense exercise needs individual guidance",tags:["sugar","dairyfree"]}
 ];
 const profileNames={athlete:"young athlete",lactose:"child who is lactose intolerant",diabetes:"child with diabetes",vegetarian:"vegetarian child",gluten:"child needing a gluten-free diet",allergy:"child with a nut allergy"};
 const chosen=new Set();let activeMeal="Breakfast";let evaluated=false;
@@ -169,7 +182,14 @@ function evaluate(){
  add(p==="lactose"&&picked.some(d=>d.tags.includes("dairy")),"Some selected dishes may contain lactose or dairy. Choose clearly labelled lactose-free products or suitable alternatives, and check ingredients.");
  add(p==="athlete"&&!tags.has("protein"),"Add a protein source such as lentils, beans, eggs, tofu, fish or chicken to support growth and muscle repair.");
  add(p==="athlete"&&!tags.has("carb"),"Include carbohydrate-rich foods such as rice, oats, potatoes or whole grains to help provide energy for activity.");
- add(p==="athlete"&&picked.length<3,"Your plan has only a few dishes. Build a more complete day with meals and snacks suited to the child's activity and appetite.");
+ add(p==="athlete"&&picked.length<5,"Your plan has only a few dishes. Build a fuller day with meals and snacks suited to the child's activity and appetite.");
+ add(p==="athlete"&&picked.some(d=>d.tags.includes("caffeine")),"Remove the energy drink. Energy drinks are not appropriate for children because of their caffeine and other stimulant content.");
+ add(p==="athlete"&&picked.some(d=>d.tags.includes("sportsdrink")),"Question whether a sports drink is needed. Water is usually suitable for school sports; sugary sports drinks are generally unnecessary for ordinary activity.");
+ add(p==="athlete"&&picked.some(d=>d.tags.includes("sugar")),"Some choices are high in added sugar. They may fit occasionally, but should not replace balanced meals and snacks that provide useful nutrients.");
+ add(p==="athlete"&&picked.some(d=>d.tags.includes("fried")),"Your plan includes a fried or salty snack. Consider whether it provides enough variety and useful nutrients for recovery; try fruit with yoghurt, egg and banana, or roasted chana instead.");
+ add(p==="athlete"&&picked.some(d=>d.id==="plainrice"),"Plain rice alone is not a complete dinner. Add a protein source and vegetables, such as dal and mixed vegetables.");
+ add(p==="athlete"&&!picked.some(d=>d.tags.includes("hydration")),"Your plan does not include a hydration choice. Add water and discuss when the athlete should drink before, during and after activity.");
+ add(p==="athlete"&&picked.some(d=>d.id==="sweetcereal"),"Check the cereal label. A high-sugar, low-fibre cereal is less suitable as the regular breakfast for an athlete than a more balanced option such as oats with fruit and a protein source.");
  add(p==="diabetes"&&picked.some(d=>d.tags.includes("sugar")),"Review sugary drinks and snacks. Consider water and whole fruit, and remember that carbohydrate portions and timing should follow the child's care plan.");
  add(p==="diabetes"&&!tags.has("fiber"),"Add fibre-rich foods such as vegetables, pulses and suitable whole grains. Children with diabetes still need carbohydrates; balance and portion planning matter.");
  add(p==="diabetes"&&!tags.has("protein"),"Consider adding protein such as pulses, eggs, tofu, fish or chicken to help make meals more balanced.");
@@ -188,12 +208,13 @@ function evaluate(){
  $("feedback").innerHTML=`<div class="feedback-box ${status}"><h3>${issues.length?"🛠️ Good start — let's improve it!":"🌟 Nice work!"}</h3><p>${issues.length?"Your plan has some promising choices. Review these suggestions and make changes.":"Your choices pass the basic checks in this classroom activity. Keep checking variety and suitability."}</p>${good.length?`<h3>What you did well</h3><ul class="feedback-list">${good.map(x=>`<li>✅ ${x}</li>`).join("")}</ul>`:""}${issues.length?`<h3>Suggestions for improvement</h3><ul class="feedback-list">${issues.map(x=>`<li>${x}</li>`).join("")}</ul>`:""}</div><div class="feedback-box"><h3>🧠 Nutrition coach's reminder</h3><p>This quick checker reviews selected ingredients and broad food-group variety. It does not calculate calories, carbohydrate portions, nutrient targets or medical suitability.</p></div>`;
  renderSummary();evaluated=true;
 }
-document.querySelectorAll('input[name="profile"]').forEach(input=>input.addEventListener("change",()=>{evaluated=false;$("feedback").innerHTML='<div class="feedback-box"><h3>Profile updated</h3><p>Evaluate your meal plan again to see feedback for this child.</p></div>'}));
+document.querySelectorAll('input[name="profile"]').forEach(input=>input.addEventListener("change",()=>{evaluated=false;$("feedback").innerHTML='<div class="feedback-box"><h3>Profile updated</h3><p>Evaluate your meal plan again to see feedback for this child.</p></div>'; $("challengePrompt").textContent=currentProfile()==="athlete"?"Challenge: Your athlete has training after school. Which choices provide useful energy and recovery nutrients, and which are tempting but less suitable as everyday choices? Justify one swap.":"What one change would make your plan more suitable for this child? Explain why."}));
 document.querySelectorAll("#mealTabs button").forEach(button=>button.addEventListener("click",()=>{activeMeal=button.dataset.meal;renderDishes()}));
 $("cuisine").addEventListener("change",renderDishes);
 $("clearBtn").addEventListener("click",()=>{chosen.clear();evaluated=false;renderDishes();renderSummary();$("feedback").innerHTML='<div class="feedback-box"><h3>Plan cleared</h3><p>Choose some dishes to begin again.</p></div>'});
 $("evaluateBtn").addEventListener("click",evaluate);
 $("reflectionBtn").addEventListener("click",()=>{const answer=$("reflection").value.trim();$("reflectionFeedback").textContent=answer.length<12?"Add a little more detail. Name a food you would change and explain how it better meets the child's needs.":"Good thinking! Check that your explanation names a specific change and links it to the child's dietary needs. Your teacher can assess the scientific reasoning."});
+if(currentProfile()==="athlete") $("challengePrompt").textContent="Challenge: Your athlete has training after school. Which choices provide useful energy and recovery nutrients, and which are tempting but less suitable as everyday choices? Justify one swap.";
 renderDishes();renderSummary();
 </script>
 </body>
