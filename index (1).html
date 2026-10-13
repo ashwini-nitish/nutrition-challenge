@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plan Healthy — Meal Plan Designer</title>
+<style>
+:root{--navy:#173b70;--blue:#2678e8;--pale:#eef6ff;--line:#d6e5f6;--green:#16834a;--amber:#a65a00;--purple:#7042c4;--ink:#20324c;--muted:#5d6e84;--white:#fff}
+*{box-sizing:border-box}body{margin:0;background:#f5f9ff;color:var(--ink);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{background:linear-gradient(115deg,#e7f3ff,#fff);padding:25px max(18px,calc((100% - 1400px)/2));border-bottom:1px solid var(--line)}
+h1{margin:0;color:var(--navy);font-size:clamp(1.7rem,3vw,2.5rem)}header p{margin:8px 0 0;max-width:850px;color:#385574}
+main{max-width:1400px;margin:22px auto;padding:0 16px;display:grid;grid-template-columns:260px minmax(360px,1fr) 330px;gap:16px;align-items:start}
+.panel{background:white;border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 5px 18px #193f7010;min-width:0}
+h2{font-size:1.15rem;color:var(--navy);margin:0 0 14px}h3{font-size:1rem;margin:0 0 7px;color:var(--navy)}
+.profile-list{display:grid;gap:9px}.profile{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;transition:.15s}
+.profile:has(input:checked){border:2px solid var(--blue);background:#f1f7ff;padding:11px}.profile input{margin-top:5px;accent-color:var(--blue)}
+.profile .emoji{font-size:1.65rem}.profile strong{display:block}.profile small{display:block;color:var(--muted);margin-top:2px}
+select,button,input,textarea{font:inherit}select{width:100%;padding:10px;border:1px solid #b9cde5;border-radius:9px;background:white;color:var(--ink)}
+label.field{display:block;font-weight:650;margin:17px 0 7px}
+.tip{margin-top:16px;padding:12px;border-radius:12px;background:#eef8ff;border:1px solid #c7e5ff;font-size:.92rem}
+.meal-tabs,.filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+button{cursor:pointer;border:1px solid #c4d6eb;border-radius:9px;padding:9px 12px;background:#fff;color:var(--navy);font-weight:650}
+button:hover{filter:brightness(.97)}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #93c5fd;outline-offset:2px}
+button.active,.primary{background:var(--blue);border-color:var(--blue);color:white}.primary{width:100%;padding:12px;margin-top:12px}
+.menu-head{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}
+.menu-head label{font-size:.9rem;color:var(--muted)}
+.dishes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.dish{border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;gap:9px;align-items:flex-start;min-width:0}
+.dish:has(input:checked){border:2px solid var(--blue);background:#f5f9ff;padding:11px}
+.dish input{margin-top:5px;accent-color:var(--blue);flex-shrink:0}
+.dish-body{min-width:0}.dish-title{font-weight:750;color:#193d70}.dish-desc{font-size:.88rem;color:var(--muted);margin:4px 0 8px}
+.tags{display:flex;gap:5px;flex-wrap:wrap}.tag{font-size:.72rem;font-weight:700;border-radius:999px;padding:3px 7px;background:#e8f6e9;color:#216b37}.tag.indian{background:#fff0d8;color:#8a4a00}.tag.warning{background:#fff0e8;color:#a3441b}
+.selection-line{display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--muted);font-size:.9rem;margin-top:13px}
+.feedback-box{border-radius:12px;padding:14px;margin-bottom:12px;border:1px solid var(--line);background:#fff}
+.feedback-box.good{border-color:#9bd8b2;background:#f0fff5}.feedback-box.needs{border-color:#f0c68a;background:#fff9ef}
+.feedback-box h3{margin-bottom:5px}.feedback-box p{margin:5px 0}
+.feedback-list{padding-left:20px;margin:8px 0}.feedback-list li{margin:7px 0}
+.summary-item{padding:10px 0;border-bottom:1px solid #e8eef6}.summary-item:last-child{border-bottom:0}.summary-item strong{display:block;color:var(--navy);margin-bottom:4px}
+.empty{color:var(--muted);font-size:.92rem}.challenge{background:#f6f1ff;border-color:#dfd0ff}
+textarea{width:100%;min-height:85px;resize:vertical;border:1px solid #c4d6eb;border-radius:9px;padding:10px}
+footer{max-width:1400px;margin:0 auto;padding:0 16px 26px;color:var(--muted);font-size:.82rem}
+@media(max-width:1050px){main{grid-template-columns:240px minmax(0,1fr)}.feedback-panel{grid-column:1/-1}.feedback-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.feedback-grid>*{margin:0}}
+@media(max-width:700px){main{grid-template-columns:1fr;margin-top:12px;padding:0 10px}.feedback-panel{grid-column:auto}.dishes{grid-template-columns:1fr}.feedback-grid{grid-template-columns:1fr}header{padding:20px 15px}.panel{padding:14px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🍽️ Plan Healthy. Fuel Their Future!</h1>
+  <p>Become a junior nutritionist. Choose meals for a child with specific dietary needs, review the feedback, and improve your plan.</p>
+</header>
+<main>
+  <section class="panel">
+    <h2>1. Choose a child</h2>
+    <div class="profile-list" id="profiles">
+      <label class="profile"><input type="radio" name="profile" value="athlete" checked><span class="emoji">🏃</span><span><strong>Young athlete</strong><small>Energy, carbohydrates and protein</small></span></label>
+      <label class="profile"><input type="radio" name="profile" value="lactose"><span class="emoji">🥛</span><span><strong>Lactose intolerant</strong><small>Needs suitable dairy alternatives</small></span></label>
+      <label class="profile"><input type="radio" name="profile" value="diabetes"><span class="emoji">🩺</span><span><strong>Child with diabetes</strong><small>Consistent carbohydrates and balanced meals</small></span></label>
+      <label class="profile"><input type="radio" name="profile" value="vegetarian"><span class="emoji">🥦</span><span><strong>Vegetarian child</strong><small>No meat or fish</small></span></label>
+      <label class="profile"><input type="radio" name="profile" value="gluten"><span class="emoji">🌾</span><span><strong>Gluten-free diet</strong><small>Check ingredients and cross-contact</small></span></label>
+      <label class="profile"><input type="radio" name="profile" value="allergy"><span class="emoji">⚠️</span><span><strong>Nut allergy</strong><small>Avoid nuts and check labels</small></span></label>
+    </div>
+    <label class="field" for="age">Child's age</label>
+    <select id="age"><option>6–8 years</option><option selected>9–12 years</option><option>13–15 years</option></select>
+    <div class="tip">💡 <strong>Think about balance:</strong> Aim for a variety of food groups across the day. One food rarely provides everything a child needs.</div>
+  </section>
+
+  <section class="panel">
+    <h2>2. Build the meal plan</h2>
+    <div class="meal-tabs" id="mealTabs">
+      <button class="active" data-meal="Breakfast">☀️ Breakfast</button>
+      <button data-meal="Morning snack">🍎 Morning snack</button>
+      <button data-meal="Lunch">🍛 Lunch</button>
+      <button data-meal="Afternoon snack">🥣 Afternoon snack</button>
+      <button data-meal="Dinner">🌙 Dinner</button>
+    </div>
+    <div class="menu-head">
+      <h3 id="menuTitle">Select dishes for Breakfast</h3>
+      <label for="cuisine">Cuisine
+        <select id="cuisine" style="display:inline-block;width:auto;margin-left:5px">
+          <option value="All">All</option><option value="Indian">Indian</option><option value="International">International</option>
+        </select>
+      </label>
+    </div>
+    <div class="dishes" id="dishList"></div>
+    <div class="selection-line"><span id="selectedCount">0 dishes selected</span><button id="clearBtn" type="button">Clear plan</button></div>
+    <button class="primary" id="evaluateBtn" type="button">Evaluate my meal plan →</button>
+  </section>
+
+  <section class="panel feedback-panel">
+    <h2>3. Your feedback</h2>
+    <div id="feedback" aria-live="polite">
+      <div class="feedback-box">
+        <h3>🌟 Your nutrition coach is ready!</h3>
+        <p>Choose dishes for different meals, then select <strong>Evaluate my meal plan</strong> to get feedback and suggestions.</p>
+      </div>
+    </div>
+    <div class="feedback-grid">
+      <div class="feedback-box">
+        <h3>📝 Meal plan summary</h3>
+        <div id="summary" class="empty">Your selected dishes will appear here.</div>
+      </div>
+      <div class="feedback-box challenge">
+        <h3>💭 Think deeper</h3>
+        <p>What one change would make your plan more suitable for this child? Explain why.</p>
+        <textarea id="reflection" placeholder="I would change… because…"></textarea>
+        <button id="reflectionBtn" style="margin-top:8px">Review my explanation</button>
+        <p id="reflectionFeedback" aria-live="polite"></p>
+      </div>
+    </div>
+  </section>
+</main>
+<footer>
+  Educational activity only—not a medical meal plan. Children's needs vary. Diabetes meal planning and food-allergy management should be guided by the child's parent or guardian and a qualified healthcare professional. Always check ingredient labels and cross-contact risks.
+</footer>
+<script>
+const dishes = [
+{id:"poha",name:"Vegetable poha",meal:"Breakfast",cuisine:"Indian",desc:"Flattened rice with vegetables and mild spices",tags:["carb","veg","fiber","dairyfree"]},
+{id:"idli",name:"Idli with sambar",meal:"Breakfast",cuisine:"Indian",desc:"Steamed rice cakes with lentil and vegetable stew",tags:["carb","protein","veg","fiber","dairyfree"]},
+{id:"besan",name:"Besan chilla",meal:"Breakfast",cuisine:"Indian",desc:"Chickpea-flour pancake with vegetables",tags:["protein","veg","fiber","dairyfree"]},
+{id:"oats",name:"Oats with berries",meal:"Breakfast",cuisine:"International",desc:"Oats with fruit; choose a suitable milk or dairy-free alternative",tags:["carb","fiber","fruit","dairyfree"]},
+{id:"toast",name:"Whole-grain toast with egg",meal:"Breakfast",cuisine:"International",desc:"Whole-grain toast, egg and vegetables",tags:["carb","protein","veg","dairyfree","gluten"]},
+{id:"paratha",name:"Aloo paratha with curd",meal:"Breakfast",cuisine:"Indian",desc:"Potato-stuffed flatbread served with curd",tags:["carb","veg","dairy","fiber","gluten"]},
+{id:"fruit",name:"Seasonal fruit bowl",meal:"Morning snack",cuisine:"International",desc:"A colourful mix of fresh fruit",tags:["fruit","fiber","dairyfree"]},
+{id:"applepb",name:"Apple with peanut butter",meal:"Morning snack",cuisine:"International",desc:"Apple slices with peanut butter; contains peanuts",tags:["fruit","fiber","protein","nuts","dairyfree"]},
+{id:"chana",name:"Roasted chana",meal:"Morning snack",cuisine:"Indian",desc:"Crunchy roasted chickpeas",tags:["protein","fiber","veg","dairyfree"]},
+{id:"yogurt",name:"Lactose-free yogurt with fruit",meal:"Morning snack",cuisine:"International",desc:"Check the label for lactose-free suitability",tags:["fruit","protein","dairyfree","fiber"]},
+{id:"smoothie",name:"Banana smoothie",meal:"Morning snack",cuisine:"International",desc:"Banana blended with milk or a suitable alternative; check added sugar",tags:["fruit","carb","dairy","sugar"]},
+{id:"rajma",name:"Rajma with brown rice",meal:"Lunch",cuisine:"Indian",desc:"Kidney bean curry, brown rice and cucumber salad",tags:["carb","protein","veg","fiber","dairyfree"]},
+{id:"dal",name:"Dal, roti and cucumber salad",meal:"Lunch",cuisine:"Indian",desc:"Lentils, wheat flatbread and fresh salad",tags:["carb","protein","veg","fiber","dairyfree","gluten"]},
+{id:"paneer",name:"Paneer tikka with roti",meal:"Lunch",cuisine:"Indian",desc:"Paneer and vegetables with wheat flatbread",tags:["protein","carb","veg","dairy","gluten"]},
+{id:"chicken",name:"Grilled chicken, quinoa and vegetables",meal:"Lunch",cuisine:"International",desc:"Chicken with quinoa and colourful vegetables",tags:["protein","carb","veg","fiber","dairyfree"]},
+{id:"chickpea",name:"Chickpea and vegetable salad",meal:"Lunch",cuisine:"International",desc:"Chickpeas, crunchy vegetables and lemon dressing",tags:["protein","veg","fiber","dairyfree"]},
+{id:"pasta",name:"Whole-wheat pasta with tomato sauce",meal:"Lunch",cuisine:"International",desc:"Whole-wheat pasta with tomato and vegetables",tags:["carb","veg","fiber","dairyfree","gluten"]},
+{id:"makhana",name:"Roasted makhana",meal:"Afternoon snack",cuisine:"Indian",desc:"Lightly roasted fox nuts",tags:["veg","dairyfree"]},
+{id:"hummus",name:"Hummus with carrot sticks",meal:"Afternoon snack",cuisine:"International",desc:"Chickpea dip with crunchy vegetables; check for allergens",tags:["protein","veg","fiber","dairyfree"]},
+{id:"nuts",name:"Mixed nuts",meal:"Afternoon snack",cuisine:"International",desc:"Contains tree nuts; unsuitable for a nut allergy",tags:["protein","nuts","dairyfree"]},
+{id:"juice",name:"Sweetened fruit juice",meal:"Afternoon snack",cuisine:"International",desc:"A sugary drink; whole fruit and water are often better everyday choices",tags:["sugar","fruit","dairyfree"]},
+{id:"biscuits",name:"Cream biscuits",meal:"Afternoon snack",cuisine:"International",desc:"Packaged snack; check sugar, dairy and wheat ingredients",tags:["sugar","carb","dairy","gluten"]},
+{id:"khichdi",name:"Moong dal vegetable khichdi",meal:"Dinner",cuisine:"Indian",desc:"Rice, lentils and vegetables cooked together",tags:["carb","protein","veg","fiber","dairyfree"]},
+{id:"roti",name:"Roti with vegetables and dal",meal:"Dinner",cuisine:"Indian",desc:"Wheat flatbread, lentils and cooked vegetables",tags:["carb","protein","veg","fiber","dairyfree","gluten"]},
+{id:"fish",name:"Baked fish with brown rice",meal:"Dinner",cuisine:"International",desc:"Fish, brown rice and steamed vegetables",tags:["protein","carb","veg","fiber","dairyfree"]},
+{id:"soup",name:"Vegetable soup with whole-grain toast",meal:"Dinner",cuisine:"International",desc:"Vegetable soup and whole-grain toast",tags:["carb","veg","fiber","dairyfree","gluten"]},
+{id:"tofu",name:"Tofu and vegetable rice bowl",meal:"Dinner",cuisine:"International",desc:"Tofu, rice and mixed vegetables",tags:["protein","carb","veg","fiber","dairyfree"]}
+];
+const profileNames={athlete:"young athlete",lactose:"child who is lactose intolerant",diabetes:"child with diabetes",vegetarian:"vegetarian child",gluten:"child needing a gluten-free diet",allergy:"child with a nut allergy"};
+const chosen=new Set();let activeMeal="Breakfast";let evaluated=false;
+const $=id=>document.getElementById(id);
+function currentProfile(){return document.querySelector('input[name="profile"]:checked').value}
+function renderDishes(){
+  $("menuTitle").textContent="Select dishes for "+activeMeal;
+  document.querySelectorAll("#mealTabs button").forEach(b=>b.classList.toggle("active",b.dataset.meal===activeMeal));
+  const cuisine=$("cuisine").value;
+  const list=dishes.filter(d=>d.meal===activeMeal&&(cuisine==="All"||d.cuisine===cuisine));
+  $("dishList").innerHTML=list.map(d=>`<label class="dish"><input type="checkbox" data-id="${d.id}" ${chosen.has(d.id)?"checked":""}><span class="dish-body"><span class="dish-title">${d.name}</span><div class="dish-desc">${d.desc}</div><span class="tags"><span class="tag ${d.cuisine==="Indian"?"indian":""}">${d.cuisine}</span>${d.tags.includes("protein")?'<span class="tag">Protein</span>':""}${d.tags.includes("fiber")?'<span class="tag">Fibre</span>':""}${d.tags.includes("dairy")?'<span class="tag warning">Contains dairy</span>':""}${d.tags.includes("nuts")?'<span class="tag warning">Contains nuts</span>':""}${d.tags.includes("sugar")?'<span class="tag warning">Sugary choice</span>':""}${d.tags.includes("gluten")?'<span class="tag warning">Contains gluten</span>':""}</span></span></label>`).join("");
+  $("dishList").querySelectorAll("input").forEach(input=>input.addEventListener("change",e=>{e.target.checked?chosen.add(e.target.dataset.id):chosen.delete(e.target.dataset.id);evaluated=false;updateCount();renderSummary();$("feedback").innerHTML='<div class="feedback-box"><h3>Ready for feedback?</h3><p>Select “Evaluate my meal plan” to review your latest choices.</p></div>';}));
+  updateCount();
+}
+function selectedDishes(){return dishes.filter(d=>chosen.has(d.id))}
+function updateCount(){$("selectedCount").textContent=chosen.size+" dish"+(chosen.size===1?"":"es")+" selected"}
+function renderSummary(){
+ const picked=selectedDishes();
+ $("summary").innerHTML=picked.length?["Breakfast","Morning snack","Lunch","Afternoon snack","Dinner"].map(m=>{const arr=picked.filter(d=>d.meal===m);return arr.length?`<div class="summary-item"><strong>${m}</strong>${arr.map(d=>escapeHTML(d.name)).join("<br>")}</div>`:""}).join(""):'<span class="empty">Your selected dishes will appear here.</span>';
+}
+function escapeHTML(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function evaluate(){
+ const p=currentProfile(),picked=selectedDishes(),tags=new Set(picked.flatMap(d=>d.tags)),issues=[],good=[];
+ const add=(condition,message)=>{if(condition)issues.push(message)};
+ if(!picked.length){$("feedback").innerHTML='<div class="feedback-box needs"><h3>Choose some dishes first</h3><p>Select foods from the menu, then evaluate your plan.</p></div>';return}
+ add(p==="lactose"&&picked.some(d=>d.tags.includes("dairy")),"Some selected dishes may contain lactose or dairy. Choose clearly labelled lactose-free products or suitable alternatives, and check ingredients.");
+ add(p==="athlete"&&!tags.has("protein"),"Add a protein source such as lentils, beans, eggs, tofu, fish or chicken to support growth and muscle repair.");
+ add(p==="athlete"&&!tags.has("carb"),"Include carbohydrate-rich foods such as rice, oats, potatoes or whole grains to help provide energy for activity.");
+ add(p==="athlete"&&picked.length<3,"Your plan has only a few dishes. Build a more complete day with meals and snacks suited to the child's activity and appetite.");
+ add(p==="diabetes"&&picked.some(d=>d.tags.includes("sugar")),"Review sugary drinks and snacks. Consider water and whole fruit, and remember that carbohydrate portions and timing should follow the child's care plan.");
+ add(p==="diabetes"&&!tags.has("fiber"),"Add fibre-rich foods such as vegetables, pulses and suitable whole grains. Children with diabetes still need carbohydrates; balance and portion planning matter.");
+ add(p==="diabetes"&&!tags.has("protein"),"Consider adding protein such as pulses, eggs, tofu, fish or chicken to help make meals more balanced.");
+ add(p==="vegetarian"&&picked.some(d=>["chicken","fish"].includes(d.id)),"Replace meat or fish with vegetarian sources such as lentils, beans, chickpeas, tofu, eggs or dairy if eaten.");
+ add(p==="gluten"&&picked.some(d=>d.tags.includes("gluten")),"Some choices contain wheat or gluten. Swap them for suitable gluten-free alternatives and check packaging for cross-contact warnings.");
+ add(p==="allergy"&&picked.some(d=>d.tags.includes("nuts")),"A selected dish contains nuts. Remove it, check ingredient labels, and avoid cross-contact. Follow the child's allergy action plan.");
+ if(tags.has("fruit"))good.push("Includes fruit.");
+ if(tags.has("veg"))good.push("Includes vegetable-based choices.");
+ if(tags.has("protein"))good.push("Includes protein sources.");
+ if(tags.has("fiber"))good.push("Includes fibre-rich foods.");
+ if(picked.some(d=>d.meal==="Breakfast")&&picked.some(d=>d.meal==="Lunch")&&picked.some(d=>d.meal==="Dinner"))good.push("Includes choices for breakfast, lunch and dinner.");
+ if(picked.length<5)issues.push("Try planning across more meals and snacks so you can assess variety over the whole day.");
+ if(!tags.has("fruit"))issues.push("Consider adding a serving of whole fruit for variety and fibre.");
+ if(!tags.has("veg"))issues.push("Add vegetables to increase variety and provide important nutrients.");
+ const status=issues.length?"needs":"good";
+ $("feedback").innerHTML=`<div class="feedback-box ${status}"><h3>${issues.length?"🛠️ Good start — let's improve it!":"🌟 Nice work!"}</h3><p>${issues.length?"Your plan has some promising choices. Review these suggestions and make changes.":"Your choices pass the basic checks in this classroom activity. Keep checking variety and suitability."}</p>${good.length?`<h3>What you did well</h3><ul class="feedback-list">${good.map(x=>`<li>✅ ${x}</li>`).join("")}</ul>`:""}${issues.length?`<h3>Suggestions for improvement</h3><ul class="feedback-list">${issues.map(x=>`<li>${x}</li>`).join("")}</ul>`:""}</div><div class="feedback-box"><h3>🧠 Nutrition coach's reminder</h3><p>This quick checker reviews selected ingredients and broad food-group variety. It does not calculate calories, carbohydrate portions, nutrient targets or medical suitability.</p></div>`;
+ renderSummary();evaluated=true;
+}
+document.querySelectorAll('input[name="profile"]').forEach(input=>input.addEventListener("change",()=>{evaluated=false;$("feedback").innerHTML='<div class="feedback-box"><h3>Profile updated</h3><p>Evaluate your meal plan again to see feedback for this child.</p></div>'}));
+document.querySelectorAll("#mealTabs button").forEach(button=>button.addEventListener("click",()=>{activeMeal=button.dataset.meal;renderDishes()}));
+$("cuisine").addEventListener("change",renderDishes);
+$("clearBtn").addEventListener("click",()=>{chosen.clear();evaluated=false;renderDishes();renderSummary();$("feedback").innerHTML='<div class="feedback-box"><h3>Plan cleared</h3><p>Choose some dishes to begin again.</p></div>'});
+$("evaluateBtn").addEventListener("click",evaluate);
+$("reflectionBtn").addEventListener("click",()=>{const answer=$("reflection").value.trim();$("reflectionFeedback").textContent=answer.length<12?"Add a little more detail. Name a food you would change and explain how it better meets the child's needs.":"Good thinking! Check that your explanation names a specific change and links it to the child's dietary needs. Your teacher can assess the scientific reasoning."});
+renderDishes();renderSummary();
+</script>
+</body>
+</html>
